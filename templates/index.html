@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>Flask App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Flask App</h1>
+    <form id="text-form">
+    <input type="text" name="text" id="text-input" placeholder="Enter text">
+    <select name="num_images" id="num-images">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <!-- 添加更多选项根据需要 -->
+    </select>
+    <button type="submit">Submit</button>
+</form>
+<div id="images-container"></div>
+
+<script>
+    $(document).ready(function(){
+        $('#text-form').on('submit', function(e){
+            e.preventDefault();
+            $.ajax({
+                url: '/process',
+                method: 'POST',
+                data: {
+                    text: $('#text-input').val(),
+                    num_images: $('#num-images').val()
+                },
+                success: function(response){
+                    $('#images-container').empty();
+                    response.images.forEach(function(imageBase64) {
+                        $('#images-container').append(
+                            $('<img alt="数据源无合适数据">').attr('src', 'data:image/png;base64,' + imageBase64)
+                        );
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

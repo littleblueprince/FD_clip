@@ -1,0 +1,5 @@
+.idea/
+.__pycache__/
+
+clip_cn_vit-b-16.pt
+backend/data/image_features.jsonl
