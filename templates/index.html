@@ -1,46 +1,110 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>Flask App</title>
+    <meta charset="UTF-8">
+    <title>Fudan-CLIP</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+
+    /* 设置背景图片 */
+    body {
+        background-image: url('background.jpeg'); /* 确保图片名与文件夹中的图片名相匹配 */
+        background-size: cover; /* 背景图片覆盖整个页面 */
+        background-position: center; /* 背景图片居中显示 */
+        background-attachment: fixed; /* 背景图片固定，内容滚动 */
+        background-repeat: no-repeat; /* 背景图片不重复 */
+    }
+
+    /* 考虑到背景图片，可能需要调整文本颜色以确保可读性 */
+    .container, .text-form {
+        background: rgba(255, 255, 255, 0.8); /* 为内容添加半透明白色背景 */
+        padding: 200px;
+        border-radius: 8px;
+    }
+    </style>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .slider-label {
+            display: block;
+            margin: 0;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        #images-container img {
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        .custom-control-label:before {
+            background-color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <h1>Flask App</h1>
-    <form id="text-form">
-    <input type="text" name="text" id="text-input" placeholder="Enter text">
-    <select name="num_images" id="num-images">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <!-- 添加更多选项根据需要 -->
-    </select>
-    <button type="submit">Submit</button>
-</form>
-<div id="images-container"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h1 class="text-center">Fudan-CLIP</h1>
+            </div>
+            <div class="col-md-8 offset-md-2">
+                <form id="text-form" class="p-4 shadow-sm rounded bg-white">
+                    <div class="form-group">
+                        <label for="text-input">请输入文本:</label>
+                        <input type="text" class="form-control" name="text" id="text-input" placeholder="请输入文本">
+                    </div>
 
-<script>
-    $(document).ready(function(){
-        $('#text-form').on('submit', function(e){
-            e.preventDefault();
-            $.ajax({
-                url: '/process',
-                method: 'POST',
-                data: {
-                    text: $('#text-input').val(),
-                    num_images: $('#num-images').val()
-                },
-                success: function(response){
-                    $('#images-container').empty();
-                    response.images.forEach(function(imageBase64) {
-                        $('#images-container').append(
-                            $('<img alt="数据源无合适数据">').attr('src', 'data:image/png;base64,' + imageBase64)
-                        );
-                    });
-                }
+                    <div class="form-group">
+                        <label class="slider-label" for="num-images-slider">选择检索图像数量: <span id="num-images-value">8</span></label>
+                        <input type="range" class="custom-range" id="num-images-slider" name="num_images" min="1" max="20" value="8">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">搜索</button>
+                </form>
+            </div>
+            <div class="col-12">
+                <div id="images-container" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新滑动条数值的显示
+        var slider = document.getElementById("num-images-slider");
+        var output = document.getElementById("num-images-value");
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+        }
+
+        $(document).ready(function(){
+            $('#text-form').on('submit', function(e){
+                e.preventDefault();
+                $.ajax({
+                    url: '/process',
+                    method: 'POST',
+                    data: {
+                        text: $('#text-input').val(),
+                        num_images: $('#num-images-slider').val(),
+                    },
+                    success: function(response){
+                        $('#images-container').empty();
+                        response.images.forEach(function(imageBase64) {
+                            $('#images-container').append(
+                                $('<img>').attr('src', 'data:image/png;base64,' + imageBase64)
+                            );
+                        });
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 
 </body>
 </html>
