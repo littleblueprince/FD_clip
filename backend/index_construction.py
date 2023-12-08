@@ -70,6 +70,7 @@ def construct_index(jsonl_file_path, dim, store_file_path, index_type='IVFFlat',
             index.train(image_base64_list)  # 训练索引
             assert index.is_trained  # 确保索引已经被训练
 
+    index = faiss.IndexIDMap(index)
     index.add_with_ids(image_base64_list, image_id_list)  # 向索引中添加embedding以及对应小文件id
     faiss.write_index(index, store_file_path)  # 存储索引
 
